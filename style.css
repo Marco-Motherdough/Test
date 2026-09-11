@@ -25,7 +25,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
-  background: linear-gradient(160deg, #4b6cff 0%, #7b5cff 28%, #b45cff 55%, #ff7ad9 78%, #ffb199 100%);
+  background: linear-gradient(160deg, #0d1550 0%, #341d7a 26%, #5c1e8c 52%, #8a1e78 76%, #b32e5c 100%);
   background-size: 250% 250%;
   animation: gradient-shift 9s ease-in-out infinite;
   display: flex;
@@ -44,74 +44,99 @@ body {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  filter: blur(0px);
+}
+
+.aurora {
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(120, 180, 255, 0.55),
+    rgba(255, 130, 220, 0.55),
+    rgba(180, 130, 255, 0.55),
+    rgba(255, 200, 120, 0.55),
+    rgba(120, 180, 255, 0.55)
+  );
+  filter: blur(60px);
+  animation: spin 14s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(4px);
-  opacity: 0.95;
-  mix-blend-mode: screen;
+  filter: blur(14px);
+  opacity: 1;
+  mix-blend-mode: normal;
+  box-shadow: 0 0 90px 20px currentColor;
   animation: float 9s ease-in-out infinite, pulse 3.5s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
 .orb-1 {
-  width: 520px;
-  height: 520px;
-  top: -120px;
+  width: 480px;
+  height: 480px;
+  top: -100px;
   left: -100px;
-  background: radial-gradient(circle at 30% 30%, #aee3ff, transparent 68%);
+  color: #4fd8ff;
+  background: radial-gradient(circle at 30% 30%, #d8f6ff 0%, #4fd8ff 42%, transparent 72%);
   animation-duration: 10s, 4s;
   animation-delay: 0s, 0s;
 }
 
 .orb-2 {
-  width: 560px;
-  height: 560px;
-  bottom: -160px;
+  width: 520px;
+  height: 520px;
+  bottom: -140px;
   right: -140px;
-  background: radial-gradient(circle at 60% 40%, #ffb3e6, transparent 68%);
+  color: #ff5cc7;
+  background: radial-gradient(circle at 60% 40%, #ffe0f5 0%, #ff5cc7 42%, transparent 72%);
   animation-duration: 11s, 4.5s;
   animation-delay: -3s, -1s;
 }
 
 .orb-3 {
-  width: 420px;
-  height: 420px;
-  top: 40%;
+  width: 380px;
+  height: 380px;
+  top: 38%;
   left: 55%;
-  background: radial-gradient(circle at 50% 50%, #dcb8ff, transparent 68%);
+  color: #b06bff;
+  background: radial-gradient(circle at 50% 50%, #ecdcff 0%, #b06bff 42%, transparent 72%);
   animation-duration: 8s, 3s;
   animation-delay: -6s, -2s;
 }
 
 .orb-4 {
-  width: 340px;
-  height: 340px;
-  top: 65%;
-  left: 8%;
-  background: radial-gradient(circle at 50% 50%, #ffe694, transparent 68%);
+  width: 320px;
+  height: 320px;
+  top: 62%;
+  left: 6%;
+  color: #ffcf4d;
+  background: radial-gradient(circle at 50% 50%, #fff3d0 0%, #ffcf4d 42%, transparent 72%);
   animation-duration: 9.5s, 3.8s;
   animation-delay: -1.5s, -2.5s;
 }
 
 @keyframes float {
   0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-  25% { transform: translate(140px, -110px) scale(1.25) rotate(16deg); }
-  50% { transform: translate(50px, 100px) scale(0.85) rotate(-10deg); }
-  75% { transform: translate(-120px, -60px) scale(1.15) rotate(12deg); }
+  25% { transform: translate(180px, -140px) scale(1.3) rotate(18deg); }
+  50% { transform: translate(70px, 130px) scale(0.8) rotate(-12deg); }
+  75% { transform: translate(-160px, -80px) scale(1.2) rotate(14deg); }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.5; }
+  0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body,
-  .orb {
+  .orb,
+  .aurora {
     animation: none !important;
   }
 }
