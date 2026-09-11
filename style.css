@@ -73,8 +73,17 @@ body {
   opacity: 1;
   mix-blend-mode: normal;
   box-shadow: 0 0 120px 40px currentColor;
-  animation: float 5s ease-in-out infinite, pulse 1.8s ease-in-out infinite;
+  animation: float 10s ease-in-out infinite, pulse 3.6s ease-in-out infinite;
   will-change: transform, opacity;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+}
+
+.orb.popped {
+  animation-play-state: paused, paused;
+  transform: scale(1.8) !important;
+  opacity: 0 !important;
 }
 
 .orb-1 {
@@ -84,7 +93,7 @@ body {
   left: -100px;
   color: #4fd8ff;
   background: radial-gradient(circle at 30% 30%, #ffffff 0%, #4fd8ff 42%, transparent 72%);
-  animation-duration: 5s, 1.8s;
+  animation-duration: 10s, 3.6s;
   animation-delay: 0s, 0s;
 }
 
@@ -95,7 +104,7 @@ body {
   right: -120px;
   color: #ff2fb0;
   background: radial-gradient(circle at 60% 40%, #ffffff 0%, #ff2fb0 42%, transparent 72%);
-  animation-duration: 5.6s, 2s;
+  animation-duration: 11.2s, 4s;
   animation-delay: -1.5s, -0.5s;
 }
 
@@ -106,7 +115,7 @@ body {
   left: 55%;
   color: #a52fff;
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #a52fff 42%, transparent 72%);
-  animation-duration: 4.2s, 1.5s;
+  animation-duration: 8.4s, 3s;
   animation-delay: -3s, -1s;
 }
 
@@ -117,7 +126,7 @@ body {
   left: 6%;
   color: #ffb100;
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffb100 42%, transparent 72%);
-  animation-duration: 4.8s, 1.9s;
+  animation-duration: 9.6s, 3.8s;
   animation-delay: -0.8s, -1.2s;
 }
 

@@ -19,3 +19,11 @@ form.addEventListener("submit", (event) => {
     submitBtn.disabled = false;
   }, 1200);
 });
+
+document.querySelectorAll(".orb").forEach((orb) => {
+  orb.addEventListener("click", () => {
+    if (orb.classList.contains("popped")) return;
+    orb.classList.add("popped");
+    setTimeout(() => orb.classList.remove("popped"), 900);
+  });
+});
