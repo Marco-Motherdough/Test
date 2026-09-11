@@ -26,9 +26,17 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background: linear-gradient(160deg, #4b6cff 0%, #7b5cff 28%, #b45cff 55%, #ff7ad9 78%, #ffb199 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 16s ease-in-out infinite;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 30%; }
+  50% { background-position: 100% 70%; }
+  100% { background-position: 0% 30%; }
 }
 
 .backdrop {
@@ -45,7 +53,8 @@ body {
   filter: blur(10px);
   opacity: 0.8;
   mix-blend-mode: screen;
-  animation: float 18s ease-in-out infinite;
+  animation: float 18s ease-in-out infinite, pulse 7s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .orb-1 {
@@ -54,7 +63,8 @@ body {
   top: -120px;
   left: -100px;
   background: radial-gradient(circle at 30% 30%, #8fd3ff, transparent 70%);
-  animation-delay: 0s;
+  animation-duration: 20s, 8s;
+  animation-delay: 0s, 0s;
 }
 
 .orb-2 {
@@ -63,7 +73,8 @@ body {
   bottom: -160px;
   right: -140px;
   background: radial-gradient(circle at 60% 40%, #ff9ad5, transparent 70%);
-  animation-delay: -6s;
+  animation-duration: 24s, 9s;
+  animation-delay: -6s, -2s;
 }
 
 .orb-3 {
@@ -72,13 +83,37 @@ body {
   top: 40%;
   left: 55%;
   background: radial-gradient(circle at 50% 50%, #c9a2ff, transparent 70%);
-  animation-delay: -12s;
+  animation-duration: 17s, 6s;
+  animation-delay: -12s, -4s;
+}
+
+.orb-4 {
+  width: 300px;
+  height: 300px;
+  top: 65%;
+  left: 8%;
+  background: radial-gradient(circle at 50% 50%, #ffe08a, transparent 70%);
+  animation-duration: 22s, 10s;
+  animation-delay: -3s, -5s;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -25px) scale(1.06); }
-  66% { transform: translate(-25px, 20px) scale(0.96); }
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(60px, -50px) scale(1.12) rotate(8deg); }
+  50% { transform: translate(20px, 40px) scale(0.94) rotate(-4deg); }
+  75% { transform: translate(-50px, -20px) scale(1.05) rotate(6deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .orb {
+    animation: none !important;
+  }
 }
 
 .stage {
