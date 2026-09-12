@@ -7,6 +7,7 @@ const matrixInner = document.getElementById("matrix-inner");
 const matrixCanvas = document.getElementById("matrix-canvas");
 const matrixForm = document.getElementById("matrix-form");
 const crackOverlay = document.getElementById("crack-overlay");
+const shatterShards = document.getElementById("shatter-shards");
 const transitionVeil = document.getElementById("transition-veil");
 const notesScreen = document.getElementById("notes-screen");
 const notesClock = document.getElementById("notes-clock");
@@ -51,30 +52,91 @@ form.addEventListener("submit", (event) => {
   }, orbs.length * 120 + 1100);
 });
 
+function buildShatterShards(centerX, centerY) {
+  shatterShards.innerHTML = "";
+  shatterShards.classList.remove("fly");
+
+  const count = 11;
+  const step = 360 / count;
+
+  for (let i = 0; i < count; i++) {
+    const a0 = i * step + (Math.random() * 10 - 5);
+    const a1 = (i + 1) * step + (Math.random() * 10 - 5);
+    const mid = (a0 + a1) / 2;
+    const outerR = 150;
+    const jagR = 55 + Math.random() * 25;
+
+    const toPoint = (angleDeg, radius) => {
+      const rad = (angleDeg * Math.PI) / 180;
+      return [centerX + Math.cos(rad) * radius, centerY + Math.sin(rad) * radius];
+    };
+
+    const [x0, y0] = toPoint(a0, outerR);
+    const [xm, ym] = toPoint(mid, jagR);
+    const [x1, y1] = toPoint(a1, outerR);
+
+    const shard = document.createElement("div");
+    shard.className = "shard";
+    shard.style.clipPath = `polygon(${centerX}% ${centerY}%, ${x0}% ${y0}%, ${xm}% ${ym}%, ${x1}% ${y1}%)`;
+
+    const flyRad = (mid * Math.PI) / 180;
+    const dist = 35 + Math.random() * 40;
+    shard.style.setProperty("--dx", `${(Math.cos(flyRad) * dist).toFixed(1)}vw`);
+    shard.style.setProperty("--dy", `${(Math.sin(flyRad) * dist).toFixed(1)}vh`);
+    shard.style.setProperty("--rot", `${(Math.random() * 150 - 75).toFixed(0)}deg`);
+    shard.style.transitionDelay = `${Math.floor(Math.random() * 90)}ms`;
+
+    shatterShards.appendChild(shard);
+  }
+
+  shatterShards.hidden = false;
+  void shatterShards.offsetWidth;
+  requestAnimationFrame(() => shatterShards.classList.add("fly"));
+}
+
 matrixForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const btn = matrixForm.querySelector(".matrix-btn");
   btn.textContent = "ACCESS GRANTED";
   btn.disabled = true;
 
+  // Stop the rain loop and freeze the background bubbles so the crack/
+  // shatter sequence isn't fighting other animations for the main thread
+  // on slower devices.
+  stopMatrixRain();
+  document.body.classList.add("frozen");
+
   matrixInner.classList.add("shaking");
   crackOverlay.classList.add("show");
 
   setTimeout(() => {
-    transitionVeil.classList.add("show");
-  }, 250);
+    buildShatterShards(50, 48);
+  }, 300);
 
   setTimeout(() => {
+    transitionVeil.classList.add("show");
+  }, 500);
+
+  // The screen swap has to happen once the veil is actually opaque, not
+  // just after a guessed delay -- on a loaded main thread the earlier
+  // timers can land late, and swapping before the veil finishes covers
+  // the screen would flash the cut. transitionend gives the real signal.
+  function onVeilCovered(e) {
+    if (e.propertyName !== "opacity" || !transitionVeil.classList.contains("show")) return;
+    transitionVeil.removeEventListener("transitionend", onVeilCovered);
+
     matrixScreen.hidden = true;
     matrixInner.classList.remove("shaking");
     crackOverlay.classList.remove("show");
+    shatterShards.hidden = true;
+    shatterShards.classList.remove("fly");
+    shatterShards.innerHTML = "";
     notesScreen.hidden = false;
     startNotesClock();
-  }, 650);
 
-  setTimeout(() => {
-    transitionVeil.classList.remove("show");
-  }, 750);
+    setTimeout(() => transitionVeil.classList.remove("show"), 120);
+  }
+  transitionVeil.addEventListener("transitionend", onVeilCovered);
 });
 
 function startNotesClock() {
@@ -134,4 +196,11 @@ function startMatrixRain() {
   }
 
   draw();
+}
+
+function stopMatrixRain() {
+  if (matrixAnimationId) {
+    cancelAnimationFrame(matrixAnimationId);
+    matrixAnimationId = null;
+  }
 }
