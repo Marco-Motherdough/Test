@@ -87,22 +87,66 @@
   </main>
 
   <section class="matrix-screen" id="matrix-screen" hidden>
-    <canvas id="matrix-canvas"></canvas>
-    <div class="matrix-panel">
-      <p class="matrix-line">WAKE UP...</p>
-      <h1 class="matrix-title">THE SYSTEM HAS YOU</h1>
-      <form class="matrix-form" id="matrix-form">
-        <label class="matrix-field">
-          <span>&gt; IDENTIFY YOURSELF</span>
-          <input type="text" name="matrix-user" id="matrix-user" placeholder="_" autocomplete="off" />
-        </label>
-        <label class="matrix-field">
-          <span>&gt; ACCESS KEY</span>
-          <input type="password" name="matrix-key" id="matrix-key" placeholder="_" autocomplete="off" />
-        </label>
-        <button type="submit" class="matrix-btn">ENTER THE MATRIX</button>
-      </form>
+    <div class="matrix-inner" id="matrix-inner">
+      <canvas id="matrix-canvas"></canvas>
+      <div class="matrix-panel">
+        <p class="matrix-line">WAKE UP...</p>
+        <h1 class="matrix-title">THE SYSTEM HAS YOU</h1>
+        <form class="matrix-form" id="matrix-form">
+          <label class="matrix-field">
+            <span>&gt; IDENTIFY YOURSELF</span>
+            <input type="text" name="matrix-user" id="matrix-user" placeholder="_" autocomplete="off" />
+          </label>
+          <label class="matrix-field">
+            <span>&gt; ACCESS KEY</span>
+            <input type="password" name="matrix-key" id="matrix-key" placeholder="_" autocomplete="off" />
+          </label>
+          <button type="submit" class="matrix-btn">ENTER THE MATRIX</button>
+        </form>
+      </div>
     </div>
+  </section>
+
+  <div class="crack-overlay" id="crack-overlay">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path class="crack-path" d="M50 48 L38 22 L41 6 M38 22 L28 15" />
+      <path class="crack-path" d="M50 48 L63 18 L58 3 M63 18 L74 12" />
+      <path class="crack-path" d="M50 48 L18 42 L3 46 M18 42 L10 30" />
+      <path class="crack-path" d="M50 48 L14 62 L2 58 M14 62 L20 76" />
+      <path class="crack-path" d="M50 48 L58 75 L52 96 M58 75 L70 82" />
+      <path class="crack-path" d="M50 48 L82 55 L97 50 M82 55 L88 68" />
+      <path class="crack-path" d="M50 48 L72 30 L90 20 M72 30 L80 40" />
+      <path class="crack-path" d="M50 48 L30 65 L12 72 M30 65 L36 78" />
+    </svg>
+  </div>
+
+  <div class="transition-veil" id="transition-veil"></div>
+
+  <section class="notes-screen" id="notes-screen" hidden>
+    <div class="notes-scanlines"></div>
+    <header class="notes-header">
+      <div class="notes-header__left">
+        <span class="notes-dot"></span>
+        <span>Secure Terminal</span>
+      </div>
+      <div class="notes-header__right">
+        <span id="notes-clock">00:00:00</span>
+      </div>
+    </header>
+
+    <div class="notes-body">
+      <div class="notes-meta">
+        <span>FILE: session_notes.log</span>
+        <span>ENCRYPTION: AES-256</span>
+        <span>STATUS: <span class="status-ok">CONNECTED</span></span>
+      </div>
+      <textarea id="notes-area" class="notes-area" placeholder="&gt; begin log entry..." spellcheck="false"></textarea>
+    </div>
+
+    <footer class="notes-footer">
+      <span id="notes-count">0 CHARACTERS</span>
+      <span>NODE 07 // UPLINK STABLE</span>
+    </footer>
   </section>
 
   <script src="script.js"></script>

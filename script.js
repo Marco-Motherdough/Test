@@ -3,8 +3,15 @@ const passwordInput = document.getElementById("password");
 const toggleBtn = document.getElementById("toggle-visibility");
 const orbs = document.querySelectorAll(".orb");
 const matrixScreen = document.getElementById("matrix-screen");
+const matrixInner = document.getElementById("matrix-inner");
 const matrixCanvas = document.getElementById("matrix-canvas");
 const matrixForm = document.getElementById("matrix-form");
+const crackOverlay = document.getElementById("crack-overlay");
+const transitionVeil = document.getElementById("transition-veil");
+const notesScreen = document.getElementById("notes-screen");
+const notesClock = document.getElementById("notes-clock");
+const notesArea = document.getElementById("notes-area");
+const notesCount = document.getElementById("notes-count");
 
 toggleBtn.addEventListener("click", () => {
   const isPassword = passwordInput.type === "password";
@@ -49,6 +56,38 @@ matrixForm.addEventListener("submit", (event) => {
   const btn = matrixForm.querySelector(".matrix-btn");
   btn.textContent = "ACCESS GRANTED";
   btn.disabled = true;
+
+  matrixInner.classList.add("shaking");
+  crackOverlay.classList.add("show");
+
+  setTimeout(() => {
+    transitionVeil.classList.add("show");
+  }, 250);
+
+  setTimeout(() => {
+    matrixScreen.hidden = true;
+    matrixInner.classList.remove("shaking");
+    crackOverlay.classList.remove("show");
+    notesScreen.hidden = false;
+    startNotesClock();
+  }, 650);
+
+  setTimeout(() => {
+    transitionVeil.classList.remove("show");
+  }, 750);
+});
+
+function startNotesClock() {
+  function tick() {
+    notesClock.textContent = new Date().toLocaleTimeString("en-GB", { hour12: false });
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+notesArea.addEventListener("input", () => {
+  const len = notesArea.value.length;
+  notesCount.textContent = `${len} CHARACTER${len === 1 ? "" : "S"}`;
 });
 
 let matrixAnimationId = null;
