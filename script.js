@@ -133,6 +133,15 @@ const sfx = {
       setTimeout(() => playTone({ freq, type: "triangle", duration: 0.14, gain: 0.18 }), i * 80);
     });
   },
+  doorCreak() {
+    playNoiseBurst({ duration: 0.5, filterType: "lowpass", freq: 900, freqTo: 220, q: 4, gain: 0.22 });
+    playTone({ startFreq: 340, endFreq: 180, type: "sawtooth", duration: 0.45, gain: 0.06 });
+  },
+  bellChime() {
+    [880, 1320].forEach((freq, i) => {
+      setTimeout(() => playTone({ freq, type: "triangle", duration: 0.5, gain: 0.14 }), i * 140);
+    });
+  },
 };
 
 const form = document.getElementById("signin-form");
@@ -310,6 +319,47 @@ notesArea.addEventListener("input", () => {
   const len = notesArea.value.length;
   notesCount.textContent = `${len} CHARACTER${len === 1 ? "" : "S"}`;
   sfx.key();
+});
+
+/* ---------------------------------------------------------------------
+   Log out -> saloon doors swing shut, screens swap behind them, doors
+   swing back open onto the old-western "session terminated" screen.
+--------------------------------------------------------------------- */
+
+const logoutBtn = document.getElementById("logout-btn");
+const saloonDoors = document.getElementById("saloon-doors");
+const saloonDoorLeft = document.querySelector(".saloon-door--left");
+const westernScreen = document.getElementById("western-screen");
+const rideOutBtn = document.getElementById("ride-out-btn");
+
+logoutBtn.addEventListener("click", () => {
+  sfx.doorCreak();
+  saloonDoors.classList.add("active");
+  void saloonDoors.offsetWidth;
+  saloonDoors.classList.add("closed");
+
+  function onDoorTransitionEnd(e) {
+    if (e.propertyName !== "transform") return;
+
+    if (saloonDoors.classList.contains("closed")) {
+      // Doors finished swinging shut: swap the screen behind them, then
+      // swing back open onto whatever's now there.
+      notesScreen.hidden = true;
+      westernScreen.hidden = false;
+      sfx.bellChime();
+      setTimeout(() => saloonDoors.classList.remove("closed"), 200);
+    } else {
+      // Doors finished swinging back open.
+      saloonDoors.classList.remove("active");
+      saloonDoorLeft.removeEventListener("transitionend", onDoorTransitionEnd);
+    }
+  }
+  saloonDoorLeft.addEventListener("transitionend", onDoorTransitionEnd);
+});
+
+rideOutBtn.addEventListener("click", () => {
+  sfx.click();
+  setTimeout(() => window.location.reload(), 150);
 });
 
 let matrixAnimationId = null;

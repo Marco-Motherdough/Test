@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -210,6 +213,7 @@
       </div>
       <div class="notes-header__right">
         <span id="notes-clock">00:00:00</span>
+        <button type="button" class="logout-btn" id="logout-btn">LOG OUT</button>
       </div>
     </header>
 
@@ -232,6 +236,45 @@
       <span id="notes-count">0 CHARACTERS</span>
       <span>NODE 07 // <span class="accent-magenta">UPLINK STABLE</span></span>
     </footer>
+  </section>
+
+  <div class="saloon-doors" id="saloon-doors">
+    <div class="saloon-door saloon-door--left"></div>
+    <div class="saloon-door saloon-door--right"></div>
+  </div>
+
+  <section class="western-screen" id="western-screen" hidden>
+    <div class="western-sky"></div>
+    <div class="western-sun"></div>
+    <div class="western-mesas">
+      <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+        <polygon points="0,100 0,55 40,55 55,35 75,55 110,55 110,100" />
+        <polygon points="120,100 120,65 150,40 175,65 175,100" />
+        <polygon points="200,100 200,50 230,50 245,25 265,50 300,50 300,100" />
+        <polygon points="310,100 310,60 335,35 365,60 400,60 400,100" />
+      </svg>
+    </div>
+    <div class="western-ground"></div>
+    <div class="tumbleweed" aria-hidden="true">
+      <svg viewBox="0 0 40 40" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="20" cy="20" r="14" />
+        <path d="M6 20h28M20 6v28M10 10l20 20M30 10L10 30" />
+      </svg>
+    </div>
+
+    <div class="wanted-poster">
+      <div class="wanted-poster__pin"></div>
+      <span class="wanted-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
+          <path d="M12 1l2.6 5.9 6.4.6-4.9 4.3 1.5 6.3L12 14.8 6.4 18.1l1.5-6.3L3 7.5l6.4-.6L12 1z"/>
+        </svg>
+      </span>
+      <p class="wanted-eyebrow">WANTED FOR DESERTION</p>
+      <h1 class="wanted-title">SESSION<br />TERMINATED</h1>
+      <p class="wanted-rule"></p>
+      <p class="wanted-body">Y'ALL COME BACK NOW, PARDNER.<br />The saloon doors are always swingin'.</p>
+      <button type="button" class="wanted-btn" id="ride-out-btn">RIDE OUT</button>
+    </div>
   </section>
 
   <script src="script.js"></script>

@@ -977,6 +977,29 @@ body.frozen .stage {
   gap: 10px;
 }
 
+.notes-header__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-btn {
+  font-family: inherit;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  padding: 6px 12px;
+  color: var(--np-magenta);
+  background: rgba(255, 46, 151, 0.08);
+  border: 1px solid rgba(255, 46, 151, 0.45);
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 46, 151, 0.18);
+  box-shadow: 0 0 14px rgba(255, 46, 151, 0.4);
+}
+
 .notes-dot {
   width: 7px;
   height: 7px;
@@ -1156,6 +1179,261 @@ body.frozen .stage {
   .notes-glitch::after,
   .notes-dot,
   .skyline-windows rect {
+    animation: none !important;
+  }
+}
+
+/* --- Saloon-door transition: swings shut, screens swap behind it,
+   swings back open onto the western screen. --- */
+
+.saloon-doors {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  perspective: 1400px;
+  visibility: hidden;
+}
+
+.saloon-doors.active {
+  visibility: visible;
+}
+
+.saloon-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background:
+    repeating-linear-gradient(90deg, #5c3a22 0px, #5c3a22 10px, #4a2e1a 10px, #4a2e1a 20px);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.65);
+  backface-visibility: hidden;
+  transition: transform 0.45s cubic-bezier(0.6, 0, 0.4, 1);
+}
+
+.saloon-door::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e8c07a, #8a6a2f 70%);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.saloon-door--left {
+  left: 0;
+  transform-origin: left center;
+  transform: rotateY(-105deg);
+}
+
+.saloon-door--left::before {
+  right: 14px;
+}
+
+.saloon-door--right {
+  right: 0;
+  transform-origin: right center;
+  transform: rotateY(105deg);
+}
+
+.saloon-door--right::before {
+  left: 14px;
+}
+
+.saloon-doors.closed .saloon-door--left,
+.saloon-doors.closed .saloon-door--right {
+  transform: rotateY(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saloon-door {
+    transition: none !important;
+  }
+}
+
+/* --- Western screen: logged-out / wanted-poster scene --- */
+
+.western-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 16;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #f2c877 0%, #e8a856 35%, #c97b3f 65%, #8a4f2a 100%);
+  font-family: "Special Elite", "Courier New", monospace;
+}
+
+.western-screen[hidden] {
+  display: none;
+}
+
+.western-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 38%, rgba(255, 235, 190, 0.5), transparent 70%);
+}
+
+.western-sun {
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  width: 130px;
+  height: 130px;
+  margin: -65px 0 0 -65px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3d6 0%, #ffcf6b 55%, #f2a53c 100%);
+  box-shadow: 0 0 60px 20px rgba(255, 190, 90, 0.5);
+}
+
+.western-mesas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  height: 22%;
+  opacity: 0.85;
+}
+
+.western-mesas svg {
+  width: 100%;
+  height: 100%;
+}
+
+.western-mesas polygon {
+  fill: #7a3f22;
+}
+
+.western-ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 16%;
+  background: linear-gradient(to bottom, #6b3a1f, #4a2712);
+}
+
+.tumbleweed {
+  position: absolute;
+  bottom: 15%;
+  left: -60px;
+  color: #5a3a1c;
+  opacity: 0.8;
+  animation: tumbleweed-roll 9s linear infinite;
+}
+
+@keyframes tumbleweed-roll {
+  0% { left: -60px; transform: rotate(0deg); }
+  100% { left: 105%; transform: rotate(900deg); }
+}
+
+.wanted-poster {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 20px;
+  padding: 40px 32px 34px;
+  text-align: center;
+  background: #f2e2b8;
+  background-image:
+    radial-gradient(circle at 20% 25%, rgba(139, 94, 43, 0.12), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(139, 94, 43, 0.12), transparent 40%);
+  border: 10px solid #4a2712;
+  outline: 2px solid #2b1608;
+  outline-offset: -16px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  color: #3a2412;
+}
+
+.wanted-poster__pin {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d8d8d8, #6b6b6b 75%);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5);
+}
+
+.wanted-badge {
+  display: inline-block;
+  color: #8a1f1f;
+  margin-bottom: 6px;
+}
+
+.wanted-eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  color: #8a1f1f;
+}
+
+.wanted-title {
+  font-family: "Rye", "Georgia", serif;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.15;
+  margin: 6px 0 18px;
+  letter-spacing: 0.03em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.wanted-rule {
+  height: 2px;
+  margin: 0 auto 18px;
+  width: 70%;
+  background: repeating-linear-gradient(90deg, #3a2412 0 8px, transparent 8px 14px);
+}
+
+.wanted-body {
+  margin: 0 0 26px;
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.wanted-btn {
+  font-family: "Rye", "Georgia", serif;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  padding: 12px 28px;
+  color: #f2e2b8;
+  background: linear-gradient(to bottom, #7a3f22, #4a2712);
+  border: 2px solid #2b1608;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2b1608, 0 6px 10px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wanted-btn:hover {
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 #2b1608, 0 5px 8px rgba(0, 0, 0, 0.35);
+}
+
+.wanted-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #2b1608, 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 420px) {
+  .wanted-poster {
+    padding: 32px 22px 26px;
+  }
+  .wanted-title {
+    font-size: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tumbleweed {
     animation: none !important;
   }
 }
