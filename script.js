@@ -1,3 +1,140 @@
+/* ---------------------------------------------------------------------
+   Sound engine
+
+   There are no audio assets in this project, so every sound is
+   synthesized at runtime with the Web Audio API (oscillators + short
+   filtered noise bursts) instead of shipping external files. The
+   AudioContext is created lazily on first use, which also satisfies
+   browsers' autoplay policies since every call here happens inside a
+   real user-gesture event handler (click/input/submit).
+--------------------------------------------------------------------- */
+
+const soundToggle = document.getElementById("sound-toggle");
+const soundIconOn = soundToggle.querySelector(".sound-icon-on");
+const soundIconOff = soundToggle.querySelector(".sound-icon-off");
+
+let audioCtx = null;
+let masterGain = null;
+let muted = false;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = muted ? 0 : 0.35;
+    masterGain.connect(audioCtx.destination);
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+soundToggle.addEventListener("click", () => {
+  muted = !muted;
+  ensureAudio();
+  masterGain.gain.value = muted ? 0 : 0.35;
+  soundToggle.setAttribute("aria-pressed", String(muted));
+  soundToggle.setAttribute("aria-label", muted ? "Unmute sound" : "Mute sound");
+  soundIconOn.hidden = muted;
+  soundIconOff.hidden = !muted;
+});
+
+function playTone({ freq = 440, startFreq, endFreq, type = "sine", duration = 0.15, attack = 0.004, gain = 0.5 }) {
+  if (muted) return;
+  const ctx = ensureAudio();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
+
+  osc.type = type;
+  if (startFreq && endFreq) {
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(endFreq, 1), now + duration);
+  } else {
+    osc.frequency.setValueAtTime(freq, now);
+  }
+
+  env.gain.setValueAtTime(0.0001, now);
+  env.gain.linearRampToValueAtTime(gain, now + attack);
+  env.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  osc.connect(env).connect(masterGain);
+  osc.start(now);
+  osc.stop(now + duration + 0.02);
+}
+
+function playNoiseBurst({ duration = 0.12, filterType = "bandpass", freq = 1200, freqTo, q = 1, gain = 0.4 }) {
+  if (muted) return;
+  const ctx = ensureAudio();
+  const now = ctx.currentTime;
+
+  const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = filterType;
+  filter.Q.value = q;
+  filter.frequency.setValueAtTime(freq, now);
+  if (freqTo) filter.frequency.exponentialRampToValueAtTime(freqTo, now + duration);
+
+  const env = ctx.createGain();
+  env.gain.setValueAtTime(gain, now);
+  env.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  noise.connect(filter).connect(env).connect(masterGain);
+  noise.start(now);
+  noise.stop(now + duration + 0.02);
+}
+
+const sfx = {
+  click() {
+    playTone({ freq: 720, type: "triangle", duration: 0.05, gain: 0.22 });
+  },
+  toggle() {
+    playTone({ startFreq: 480, endFreq: 760, type: "square", duration: 0.07, gain: 0.16 });
+  },
+  pop() {
+    playTone({ startFreq: 900, endFreq: 180, type: "sine", duration: 0.14, gain: 0.32 });
+    playNoiseBurst({ duration: 0.05, filterType: "bandpass", freq: 2200, gain: 0.15 });
+  },
+  whoosh() {
+    playNoiseBurst({ duration: 0.4, filterType: "bandpass", freq: 300, freqTo: 2600, q: 0.7, gain: 0.22 });
+  },
+  key() {
+    playNoiseBurst({ duration: 0.018, filterType: "highpass", freq: 2800, gain: 0.14 });
+  },
+  activate() {
+    playTone({ freq: 220, type: "sawtooth", duration: 0.22, gain: 0.2 });
+    setTimeout(() => playTone({ freq: 440, type: "sawtooth", duration: 0.18, gain: 0.16 }), 90);
+  },
+  crack() {
+    playNoiseBurst({ duration: 0.16, filterType: "bandpass", freq: 2200, freqTo: 500, q: 0.8, gain: 0.4 });
+    const shardCount = 6;
+    for (let i = 0; i < shardCount; i++) {
+      setTimeout(() => {
+        playTone({
+          freq: 1800 + Math.random() * 2200,
+          type: "sine",
+          duration: 0.08 + Math.random() * 0.05,
+          gain: 0.1,
+        });
+      }, Math.random() * 350);
+    }
+  },
+  success() {
+    [523, 659, 784].forEach((freq, i) => {
+      setTimeout(() => playTone({ freq, type: "triangle", duration: 0.14, gain: 0.18 }), i * 80);
+    });
+  },
+};
+
 const form = document.getElementById("signin-form");
 const passwordInput = document.getElementById("password");
 const toggleBtn = document.getElementById("toggle-visibility");
@@ -18,11 +155,25 @@ toggleBtn.addEventListener("click", () => {
   const isPassword = passwordInput.type === "password";
   passwordInput.type = isPassword ? "text" : "password";
   toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+  sfx.toggle();
+});
+
+document.querySelectorAll(".btn-social").forEach((btn) => {
+  btn.addEventListener("click", () => sfx.click());
+});
+
+document.querySelectorAll(".link-muted, .link-accent").forEach((link) => {
+  link.addEventListener("click", () => sfx.click());
+});
+
+document.querySelectorAll(".checkbox input").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => sfx.toggle());
 });
 
 function popOrb(orb, respawn) {
   if (orb.classList.contains("popped")) return;
   orb.classList.add("popped");
+  sfx.pop();
   if (respawn) {
     setTimeout(() => orb.classList.remove("popped"), 900);
   }
@@ -34,6 +185,7 @@ orbs.forEach((orb) => {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  sfx.whoosh();
   const submitBtn = form.querySelector(".btn-primary");
   submitBtn.innerHTML = "<span>Signing in…</span>";
   submitBtn.disabled = true;
@@ -94,8 +246,13 @@ function buildShatterShards(centerX, centerY) {
   requestAnimationFrame(() => shatterShards.classList.add("fly"));
 }
 
+document.querySelectorAll("#matrix-user, #matrix-key").forEach((input) => {
+  input.addEventListener("input", () => sfx.key());
+});
+
 matrixForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  sfx.activate();
   const btn = matrixForm.querySelector(".matrix-btn");
   btn.textContent = "ACCESS GRANTED";
   btn.disabled = true;
@@ -108,6 +265,7 @@ matrixForm.addEventListener("submit", (event) => {
 
   matrixInner.classList.add("shaking");
   crackOverlay.classList.add("show");
+  sfx.crack();
 
   setTimeout(() => {
     buildShatterShards(50, 48);
@@ -133,6 +291,7 @@ matrixForm.addEventListener("submit", (event) => {
     shatterShards.innerHTML = "";
     notesScreen.hidden = false;
     startNotesClock();
+    sfx.success();
 
     setTimeout(() => transitionVeil.classList.remove("show"), 120);
   }
@@ -150,6 +309,7 @@ function startNotesClock() {
 notesArea.addEventListener("input", () => {
   const len = notesArea.value.length;
   notesCount.textContent = `${len} CHARACTER${len === 1 ? "" : "S"}`;
+  sfx.key();
 });
 
 let matrixAnimationId = null;
