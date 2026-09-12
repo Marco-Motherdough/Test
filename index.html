@@ -35,7 +35,7 @@
         <p class="subtitle">Sign in to continue</p>
       </div>
 
-      <form class="form" id="signin-form">
+      <form class="form" id="signin-form" novalidate>
         <label class="field">
           <span class="field__label">Email</span>
           <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
@@ -85,6 +85,25 @@
       <p class="signup-hint">Don't have an account? <a href="#" class="link-accent">Sign up</a></p>
     </div>
   </main>
+
+  <section class="matrix-screen" id="matrix-screen" hidden>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="matrix-panel">
+      <p class="matrix-line">WAKE UP...</p>
+      <h1 class="matrix-title">THE SYSTEM HAS YOU</h1>
+      <form class="matrix-form" id="matrix-form">
+        <label class="matrix-field">
+          <span>&gt; IDENTIFY YOURSELF</span>
+          <input type="text" name="matrix-user" id="matrix-user" placeholder="_" autocomplete="off" />
+        </label>
+        <label class="matrix-field">
+          <span>&gt; ACCESS KEY</span>
+          <input type="password" name="matrix-key" id="matrix-key" placeholder="_" autocomplete="off" />
+        </label>
+        <button type="submit" class="matrix-btn">ENTER THE MATRIX</button>
+      </form>
+    </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
